@@ -10,6 +10,14 @@
   font-display: swap;
 }
 
+@font-face{
+  font-family: 'Broadway';
+  src: url('font/8094231822.ttf')   format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ====== PALETTE, TYPOGRAPHY, SHADOWS ====== */
 :root {
   /* Colour palette */
