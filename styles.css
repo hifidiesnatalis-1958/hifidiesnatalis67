@@ -2846,14 +2846,15 @@ section[id] {
   background: rgba(255,255,255,0.9);
   border-radius: 20px;
   padding: clamp(1rem, 2vw, 1.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.8rem, 1.5vh, 1rem);
+  display: grid; /* ← CHANGED from flex to grid */
+  grid-template-columns: auto 1fr; /* ← ADDED - jam di kiri, konten di kanan */
+  gap: clamp(1rem, 2vw, 1.5rem); /* ← CHANGED gap */
+  align-items: start; /* ← ADDED */
   position: relative;
   box-shadow: 0 8px 25px rgba(0,0,0,0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 3px solid #333;
-  text-align: center;
+  text-align: left; /* ← CHANGED from center */
 }
 
 .rundown-item::after {
@@ -2902,17 +2903,19 @@ section[id] {
 .rundown-item .arrow { display: none; }
 
 .rundown-date {
-  width: clamp(60px, 10vw, 70px);
-  height: clamp(60px, 10vw, 70px);
-  border-radius: 50%;
+  width: clamp(75px, 12vw, 90px); /* ← BIGGER */
+  height: clamp(75px, 12vw, 90px); /* ← BIGGER */
+  border-radius: 15px; /* ← CHANGED from circle to rounded square */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: var(--font-heading);
   font-weight: bold;
-  margin: 0 auto clamp(0.5rem, 1vh, 0.8rem) auto;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  margin: 0; /* ← REMOVED auto margin */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 2px 0 rgba(255,255,255,0.3); /* ← ENHANCED shadow */
+  border: 3px solid #333; /* ← ADDED border */
+  flex-shrink: 0; /* ← ADDED - prevent shrinking */
 }
 
 .rundown-date.date-1 { background: var(--highlight-1); color: #333; }
@@ -2922,22 +2925,26 @@ section[id] {
 .rundown-date.date-5 { background: var(--highlight-6); color: #fff; }
 
 .rundown-date .day {
-  font-size: clamp(0.65rem, 1.2vw, 0.75rem);
+  font-size: clamp(1rem, 2vw, 1.3rem);
   line-height: 1;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  opacity: 0.8; /* ← ADDED - slightly faded */
+  letter-spacing: 0.5px; /* ← ADDED */
 }
 
 .rundown-date .time {
-  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+  font-size: clamp(0.7rem, 1.3vw, 0.85rem); /* ← BIGGER - jam lebih jelas */
   line-height: 1;
   font-weight: 900;
+  letter-spacing: 1px; /* ← ADDED - easier to read */
 }
 
 .rundown-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.3rem, 0.8vh, 0.5rem);
+  gap: clamp(0.4rem, 1vh, 0.6rem);
+  justify-content: center; /* ← ADDED - center vertically */
 }
 
 .rundown-title {
@@ -2963,9 +2970,15 @@ section[id] {
 }
 
 @media (max-width: 768px) {
-  .rundown-list { gap: 0.8rem 1rem; }
+  .rundown-list { 
+    gap: 0.8rem 1rem; 
+  }
   
-  .rundown-item { padding: 0.8rem; }
+  .rundown-item { 
+    padding: 0.8rem;
+    grid-template-columns: auto 1fr; /* ← KEEP grid layout */
+    gap: 0.8rem; /* ← ADDED */
+  }
   
   .rundown-item::after {
     width: 24px;
@@ -2976,8 +2989,12 @@ section[id] {
   }
   
   .rundown-date {
-    width: 55px;
-    height: 55px;
+    width: 70px; /* ← BIGGER di mobile */
+    height: 70px; /* ← BIGGER di mobile */
+  }
+  
+  .rundown-date .time {
+    font-size: 1rem; /* ← BIGGER - jam lebih terlihat */
   }
 }
 
@@ -2989,7 +3006,11 @@ section[id] {
 }
 
 @media (max-width: 480px) {
-  .rundown-item { padding: 0.7rem; }
+  .rundown-item { 
+    padding: 0.7rem;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+  }
   
   .rundown-item::after {
     width: 22px;
@@ -3000,8 +3021,18 @@ section[id] {
   }
   
   .rundown-date {
-    width: 50px;
-    height: 50px;
+    width: 65px; /* ← BIGGER */
+    height: 65px; /* ← BIGGER */
+  }
+  
+  .rundown-date .day {
+    font-size: 0.65rem;
+    margin-bottom: 2px;
+  }
+  
+  .rundown-date .time {
+    font-size: 0.95rem; /* ← BIGGER - jam tetap jelas di mobile kecil */
+    font-weight: 900;
   }
 }
 
