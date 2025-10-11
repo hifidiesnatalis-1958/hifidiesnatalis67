@@ -2928,7 +2928,6 @@ section[id] {
   font-size: clamp(1rem, 2vw, 1.3rem);
   line-height: 1;
   margin-bottom: 3px;
-  opacity: 0.8; /* ← ADDED - slightly faded */
   letter-spacing: 0.5px; /* ← ADDED */
 }
 
@@ -2936,6 +2935,7 @@ section[id] {
   font-size: clamp(0.7rem, 1.3vw, 0.85rem); /* ← BIGGER - jam lebih jelas */
   line-height: 1;
   font-weight: 900;
+  opacity: 0.8; /* ← ADDED - slightly faded */
   letter-spacing: 1px; /* ← ADDED - easier to read */
 }
 
@@ -2994,12 +2994,13 @@ section[id] {
   }
   
   .rundown-date .day {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     margin-bottom: 3px;
   }
 
   .rundown-date .time {
     font-size: 1rem; /* ← BIGGER - jam lebih terlihat */
+    opacity: 0.8; /* ← ADDED - slightly faded */
   }
 }
 
@@ -3037,6 +3038,7 @@ section[id] {
   
   .rundown-date .time {
     font-size: 0.65rem; /* ← BIGGER - jam tetap jelas di mobile kecil */
+    opacity: 0.8; /* ← ADDED - slightly faded */
     font-weight: 900;
   }
 }
