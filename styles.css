@@ -2993,6 +2993,11 @@ section[id] {
     height: 70px; /* ← BIGGER di mobile */
   }
   
+  .rundown-date .day {
+    font-size: 1.1rem;
+    margin-bottom: 3px;
+  }
+
   .rundown-date .time {
     font-size: 1rem; /* ← BIGGER - jam lebih terlihat */
   }
@@ -3026,12 +3031,12 @@ section[id] {
   }
   
   .rundown-date .day {
-    font-size: 0.65rem;
-    margin-bottom: 2px;
+    font-size: 0.95rem;
+    margin-bottom: 3px;
   }
   
   .rundown-date .time {
-    font-size: 0.95rem; /* ← BIGGER - jam tetap jelas di mobile kecil */
+    font-size: 0.65rem; /* ← BIGGER - jam tetap jelas di mobile kecil */
     font-weight: 900;
   }
 }
