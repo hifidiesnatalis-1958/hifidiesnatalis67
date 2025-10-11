@@ -896,120 +896,65 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   window.showOutfitDetail = function(id, title, description, imageSrc) {
     const panel = document.getElementById('outfitDetailPanel');
+    if (!panel) return;
+    
+    // Update content
     const titleEl = document.getElementById('detailTitle');
     const outfitTitleEl = document.getElementById('detailOutfitTitle');
     const descriptionEl = document.getElementById('detailDescription');
     const imageEl = document.getElementById('detailImage');
-
-    // Remove selection from all cards with animation
+    
+    if (titleEl) titleEl.textContent = `Detail Outfit: ${title}`;
+    if (outfitTitleEl) outfitTitleEl.textContent = title;
+    if (descriptionEl) descriptionEl.textContent = description;
+    if (imageEl) {
+      imageEl.src = imageSrc;
+      imageEl.alt = `Detail ${title}`;
+    }
+    
+    // Remove selection from all cards
     document.querySelectorAll('.outfit-card').forEach(c => {
       c.classList.remove('selected');
-      c.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
     });
     
-    // Add selection to clicked card with animation
+    // Add selection to clicked card
     const selected = document.querySelector(`[data-outfit="${id}"]`);
     if (selected) {
       selected.classList.add('selected');
-      selected.style.transform = 'rotate(0deg) scale(1.02)';
-      selected.style.boxShadow = '0 0 0 4px rgba(233, 49, 26, 0.3), 0 20px 40px rgba(0,0,0,0.3)';
-      
-      // Pulse effect
-      setTimeout(() => {
-        selected.style.transform = 'rotate(0deg) scale(1.05)';
-      }, 100);
-      setTimeout(() => {
-        selected.style.transform = 'rotate(0deg) scale(1.02)';
-      }, 200);
-    }
-
-    // Update content with fade animation
-    if (titleEl) {
-      titleEl.style.opacity = '0';
-      setTimeout(() => {
-        titleEl.textContent = `Detail Outfit: ${title}`;
-        titleEl.style.opacity = '1';
-      }, 150);
     }
     
-    if (outfitTitleEl) {
-      outfitTitleEl.style.opacity = '0';
-      setTimeout(() => {
-        outfitTitleEl.textContent = title;
-        outfitTitleEl.style.opacity = '1';
-      }, 200);
-    }
+    // Show panel
+    panel.classList.add('show');
+    panel.style.display = 'block';
     
-    if (descriptionEl) {
-      descriptionEl.style.opacity = '0';
-      setTimeout(() => {
-        descriptionEl.textContent = description;
-        descriptionEl.style.opacity = '1';
-      }, 250);
-    }
+    // Force reflow
+    void panel.offsetWidth;
     
-    if (imageEl) {
-      imageEl.style.opacity = '0';
-      imageEl.style.transform = 'scale(0.9)';
-      imageEl.src = imageSrc;
-      imageEl.alt = `Detail ${title}`;
-      
-      imageEl.onload = () => {
-        imageEl.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        imageEl.style.opacity = '1';
-        imageEl.style.transform = 'scale(1)';
-      };
-    }
-    
-    // Show panel with smooth animation
-    if (panel) {
-      panel.style.display = 'block';
-      panel.style.opacity = '0';
-      panel.style.transform = 'translateY(40px) scale(0.9)';
-      
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          panel.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          panel.style.opacity = '1';
-          panel.style.transform = 'translateY(0) scale(1)';
-        });
+    // Smooth scroll after short delay
+    setTimeout(() => {
+      panel.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'nearest'
       });
-      
-      // Smooth scroll to panel after animation starts
-      setTimeout(() => {
-        panel.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
-        });
-      }, 150);
-    }
+    }, 100);
   };
 
   window.closeOutfitDetail = function() {
     const panel = document.getElementById('outfitDetailPanel');
+    if (!panel) return;
     
-    // Remove selection from all cards with smooth animation
+    // Remove class
+    panel.classList.remove('show');
+    
+    // Remove selection from all cards
     document.querySelectorAll('.outfit-card').forEach(c => {
       c.classList.remove('selected');
-      c.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      c.style.transform = '';
-      c.style.boxShadow = '';
     });
     
-    // Hide panel with smooth slide-down animation
-    if (panel) {
-      panel.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-      panel.style.opacity = '0';
-      panel.style.transform = 'translateY(40px) scale(0.95)';
-      
-      setTimeout(() => {
-        panel.style.display = 'none';
-        
-        // Reset transforms for next open
-        panel.style.transform = 'translateY(40px) scale(0.9)';
-      }, 500);
-    }
+    // Hide after transition
+    setTimeout(() => {
+      panel.style.display = 'none';
+    }, 400);
   };
 
   // Initialize outfit detail panel state

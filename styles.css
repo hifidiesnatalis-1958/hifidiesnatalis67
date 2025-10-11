@@ -3726,34 +3726,74 @@ section[id] {
 }
 
 /* ============================================================= */
-/*              OUTFIT DETAIL PANEL FIXES                        */
+/*              OUTFIT DETAIL PANEL - MOBILE OPTIMIZED          */
 /* ============================================================= */
-.outfit-detail-panel[style*="display: none"] {
-  visibility: hidden !important;
-  height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
+.outfit-detail-panel {
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.outfit-detail-panel[style*="display: block"] {
-  visibility: visible !important;
-  height: auto !important;
-  margin-top: clamp(2rem, 4vh, 3rem) !important;
-  padding: clamp(1.5rem, 3vw, 2.5rem) !important;
+.outfit-detail-panel.show {
+  display: block !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
 }
 
-.detail-image img,
-#detailImage {
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform, opacity;
+@media (max-width: 768px) {
+  .outfit-detail-panel {
+    margin-top: 1.5rem !important;
+    padding: 1.2rem !important;
+    border-radius: 20px;
+  }
+  
+  .detail-content {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  .detail-image {
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+  
+  .detail-info {
+    padding: 1.2rem !important;
+  }
 }
 
-.detail-header,
-.detail-content,
-.close-detail-btn {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity;
+@media (max-width: 480px) {
+  .outfit-detail-panel {
+    margin-top: 1rem !important;
+    padding: 1rem !important;
+    border-radius: 15px;
+  }
+  
+  .detail-header {
+    flex-direction: column !important;
+    gap: 0.8rem !important;
+  }
+  
+  .detail-title {
+    font-size: 1.5rem !important;
+    text-align: center;
+  }
+  
+  .detail-image {
+    max-width: 220px !important;
+  }
+  
+  .tips-list li {
+    padding: 0.6rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .close-detail-btn {
+    width: 100%;
+    padding: 0.9rem !important;
+    font-size: 0.95rem !important;
+  }
 }
 /* ============================================================= */
 /*                    UTILITY CLASSES                            */
