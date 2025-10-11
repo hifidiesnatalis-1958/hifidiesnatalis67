@@ -2238,6 +2238,8 @@ section[id] {
   position: relative;
   overflow: hidden;
   text-align: left;
+  cursor: pointer; /* ← ADDED */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* ← ADDED */
 }
 
 .guest-star::before {
@@ -2255,7 +2257,21 @@ section[id] {
   animation: rainbowShift 6s ease-in-out infinite;
 }
 
-.guest-star:hover::before { opacity: 0.4; }
+.guest-star:hover {
+  transform: translateY(-8px) scale(1.02); /* ← ADDED */
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.6); /* ← ADDED */
+  border-color: var(--highlight-3); /* ← ADDED */
+}
+
+.guest-star:hover::before { 
+  opacity: 0.6; /* ← CHANGED from 0.4 to 0.6 */
+  animation: rainbowShift 3s ease-in-out infinite; /* ← ADDED faster animation */
+}
+
+.guest-star:active {
+  transform: translateY(-4px) scale(0.99); /* ← ADDED */
+  transition: all 0.1s ease; /* ← ADDED */
+}
 
 .band-list {
   display: grid;
@@ -2320,6 +2336,12 @@ section[id] {
   width: clamp(80px, 12vw, 96px);
   height: clamp(80px, 12vw, 96px);
   border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* ← ADDED */
+}
+
+.guest-star:hover .artwork-large {
+  transform: scale(1.1) rotate(-3deg); /* ← ADDED */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* ← ADDED */
 }
 
 .artwork span {
@@ -2386,6 +2408,12 @@ section[id] {
   background: #fde68a;
   border-color: #facc15;
   color: #7a5a00;
+  transition: all 0.3s ease; /* ← ADDED */
+}
+
+.guest-star:hover .year-badge {
+  transform: scale(1.1) rotate(-5deg); /* ← ADDED */
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4); /* ← ADDED */
 }
 
 .highlight-tip {
@@ -3270,7 +3298,7 @@ section[id] {
   overflow: visible;
   width: 100%;
   max-width: 320px;
-  min-height: clamp(400px, 70vh, 520px);
+  min-height: auto; /* ← UBAH INI - hapus min-height fixed */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3402,6 +3430,39 @@ section[id] {
 .chart-item:hover::before { opacity: 0.7; }
 
 @media (max-width: 768px) {
+  .chart-item {
+    min-height: auto !important;
+    max-height: none !important;
+    padding: 1rem !important;
+  }
+  
+  .member-photo {
+    width: clamp(140px, 35vw, 200px) !important;
+    height: clamp(187px, 46vw, 267px) !important;
+    margin-bottom: 0.8rem !important;
+  }
+  
+  .member-info {
+    padding: 0 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .member-title {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.3rem !important;
+  }
+  
+  .member-role {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+  
+  .chart-badge {
+    padding: 0.3rem 0.7rem !important;
+    font-size: 0.7rem !important;
+    margin-top: 0.5rem !important;
+  }
+  
   .rank-number {
     width: 40px;
     height: 40px;
@@ -3412,6 +3473,32 @@ section[id] {
 }
 
 @media (max-width: 480px) {
+  .chart-item {
+    padding: 0.8rem !important;
+    border-width: 3px !important;
+  }
+  
+  .member-photo {
+    width: 130px !important;
+    height: 173px !important;
+    margin-bottom: 0.6rem !important;
+    border-width: 3px !important;
+  }
+  
+  .member-title {
+    font-size: 0.85rem !important;
+  }
+  
+  .member-role {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.6rem !important;
+  }
+  
+  .chart-badge {
+    padding: 0.25rem 0.6rem !important;
+    font-size: 0.65rem !important;
+  }
+  
   .rank-number {
     width: 35px;
     height: 35px;
