@@ -3315,6 +3315,25 @@ section[id] {
   transform: rotate(15deg);
 }
 
+@media (max-width: 768px) {
+  .magazine-year {
+    top: -5px !important;          /* ← Turunkan posisi */
+    right: 5% !important;           /* ← Geser ke kiri */
+    font-size: 1rem !important;     /* ← Lebih kecil */
+    padding: 0.5rem 1rem !important; /* ← Padding lebih kecil */
+  }
+}
+
+@media (max-width: 480px) {
+  .magazine-year {
+    top: -4px !important;
+    right: 3% !important;
+    font-size: 0.9rem !important;   /* ← Lebih kecil lagi */
+    padding: 0.4rem 0.8rem !important;
+    transform: rotate(10deg) !important; /* ← Rotasi lebih kecil */
+  }
+}
+
 .committee-chart {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
