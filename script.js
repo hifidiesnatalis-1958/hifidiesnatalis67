@@ -1,5 +1,6 @@
 // Complete Enhanced JavaScript for Dies Natalis HIFI-67 Retro Website
 // FIXED: Audio playback issues - guaranteed sound output
+// ENHANCED: Outfit detail panel with smooth animations
 
 document.addEventListener('DOMContentLoaded', () => {
   /**
@@ -273,8 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
     audio = document.createElement('audio');
     audio.id = 'audioPlayer';
     audio.preload = 'metadata';
-    // FIXED: Hapus crossOrigin untuk local files
-    // audio.crossOrigin = 'anonymous'; // REMOVED
     document.body.appendChild(audio);
   }
   
@@ -293,7 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const playlistEl = document.getElementById('playlist');
   const wave = document.getElementById('waveAnimation');
 
-  // FIXED: Audio files dengan fallback yang benar
   const tracks = [
     { 
       title: 'Chrisye - Kala Cinta Menggoda', 
@@ -324,7 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let source = null;
   let userHasInteracted = false;
 
-  // Create wave visualization
   function createWaveVisualization() {
     if (!wave) return;
     
@@ -351,9 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // FIXED: Simplified audio setup tanpa Web Audio Context yang bisa bermasalah
   function setupAudioVisualization() {
-    // Skip Web Audio Context setup untuk menghindari masalah routing
     console.log('Audio visualization setup skipped - using fallback animation');
   }
 
@@ -440,20 +435,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const track = tracks[currentIndex];
     if (!track || !audio) return;
     
-    // FIXED: Reset audio dengan proper cleanup
     audio.pause();
     audio.currentTime = 0;
     
-    // CHANGED: Set volume BEFORE loading (23% default)
     audio.volume = volumeRange ? (volumeRange.value / 100) : 0.23;
     
     audio.src = track.src;
     
-    // FIXED: Better error handling
     audio.addEventListener('error', function handleError(e) {
       console.log(`Error loading ${track.title}:`, audio.error);
       
-      // Try next track if available
       if (currentIndex < tracks.length - 1) {
         console.log('Trying next track...');
         setTimeout(() => {
@@ -464,7 +455,6 @@ document.addEventListener('DOMContentLoaded', () => {
       audio.removeEventListener('error', handleError);
     }, { once: true });
     
-    // FIXED: Load with proper event handling
     audio.addEventListener('loadeddata', function handleLoaded() {
       console.log('Audio loaded successfully:', track.title);
       console.log('Audio properties:', {
@@ -511,7 +501,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTonearm(0);
   }
 
-  // FIXED: Simplified playAudio function
   function playAudio() {
     if (!audio || !isPowerOn) {
       console.log('Cannot play: audio element missing or power off');
@@ -520,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     userHasInteracted = true;
     
-    // CHANGED: Ensure audio is not muted dan volume proper (23% default)
     audio.muted = false;
     audio.volume = volumeRange ? Math.max(0.1, volumeRange.value / 100) : 0.23;
     
@@ -539,7 +527,6 @@ document.addEventListener('DOMContentLoaded', () => {
         isPlaying = true;
         console.log('✅ Audio playing successfully!');
         
-        // Update play button
         if (playPauseBtn) {
           const icon = playPauseBtn.querySelector('i');
           if (icon) {
@@ -550,13 +537,11 @@ document.addEventListener('DOMContentLoaded', () => {
           playPauseBtn.style.boxShadow = '0 0 15px rgba(76, 205, 196, 0.4)';
         }
         
-        // Start vinyl spinning
         if (vinyl) {
           vinyl.classList.add('spinning');
           vinyl.style.filter = 'drop-shadow(0 0 20px rgba(76, 205, 196, 0.4))';
         }
         
-        // Move tonearm to playing position
         if (tonearm) {
           tonearm.classList.add('playing');
           tonearm.style.transition = 'transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -566,13 +551,12 @@ document.addEventListener('DOMContentLoaded', () => {
         animateWave();
         
       }).catch(error => {
-        console.log('❌ Playbook failed:', error);
+        console.log('❌ Playback failed:', error);
         isPlaying = false;
         
-        // Show user-friendly message
         if (currentTrackTitle) {
           const originalText = currentTrackTitle.textContent;
-          currentTrackTitle.textContent = 'Audio playbook failed - check volume';
+          currentTrackTitle.textContent = 'Audio playback failed - check volume';
           currentTrackTitle.style.color = '#ff6b6b';
           
           setTimeout(() => {
@@ -611,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (tonearm) {
       tonearm.classList.remove('playing');
-      tonearm.style.transform = 'rotate(15deg)'; // Rest position
+      tonearm.style.transform = 'rotate(15deg)';
     }
     
     stopWaveAnimation();
@@ -659,10 +643,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!tonearm) return;
     
     if (!isPlaying) {
-      tonearm.style.transform = 'rotate(15deg)'; // Rest position
+      tonearm.style.transform = 'rotate(15deg)';
     } else {
-      const startAngle = -5; // Start position when playing
-      const endAngle = 5;    // End position when track ends
+      const startAngle = -5;
+      const endAngle = 5;
       const currentAngle = startAngle + (progress * (endAngle - startAngle));
       tonearm.style.transform = `rotate(${currentAngle}deg)`;
     }
@@ -697,7 +681,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${min}:${sec.toString().padStart(2, '0')}`;
   }
 
-  // Enhanced button interactions
   function addButtonAnimation(button, callback) {
     if (!button) return;
     
@@ -705,7 +688,6 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       userHasInteracted = true;
       
-      // Create ripple effect
       const ripple = document.createElement('div');
       const rect = button.getBoundingClientRect();
       const size = Math.max(rect.width, rect.height);
@@ -732,7 +714,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       setTimeout(() => ripple.remove(), 600);
       
-      // Scale animation
       button.style.transform = 'scale(0.95)';
       setTimeout(() => {
         button.style.transform = '';
@@ -751,7 +732,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Apply button animations
   addButtonAnimation(playPauseBtn, () => {
     if (!isPowerOn) return;
     if (isPlaying) {
@@ -795,18 +775,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // CHANGED: Enhanced volume control dengan 23% default
   if (volumeRange) {
-    // Set initial volume yang 23% (changed from 50 to 23)
     volumeRange.value = 23;
     if (audio) audio.volume = 0.23;
     
     volumeRange.addEventListener('input', (e) => {
       userHasInteracted = true;
-      const volume = Math.max(0.01, e.target.value / 100); // Minimum 1%
+      const volume = Math.max(0.01, e.target.value / 100);
       if (audio) {
         audio.volume = volume;
-        audio.muted = false; // Pastikan tidak muted
+        audio.muted = false;
         console.log('Volume set to:', volume);
       }
       
@@ -814,7 +792,6 @@ document.addEventListener('DOMContentLoaded', () => {
       volumeRange.style.background = `linear-gradient(to right, #4ecdc4 ${percent}%, rgba(255,255,255,0.1) ${percent}%)`;
     });
     
-    // CHANGED: Set initial slider appearance (changed from 50 to 23)
     volumeRange.style.background = `linear-gradient(to right, #4ecdc4 23%, rgba(255,255,255,0.1) 23%)`;
     
     volumeRange.addEventListener('mousedown', () => {
@@ -826,7 +803,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Power toggle
   if (powerToggle) {
     powerToggle.checked = true;
     
@@ -845,13 +821,12 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseAudio();
         if (tonearm) {
           tonearm.classList.add('parked');
-          tonearm.style.transform = 'rotate(-45deg)'; // Parked position
+          tonearm.style.transform = 'rotate(-45deg)';
         }
       }
     });
   }
 
-  // FIXED: Audio event listeners dengan better logging
   if (audio) {
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateTime);
@@ -873,7 +848,6 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('📁 Audio data loaded:', tracks[currentIndex]?.title);
     });
 
-    // FIXED: Enhanced play/pause handling
     audio.addEventListener('play', () => {
       console.log('▶️ Audio started playing');
       isPlaying = true;
@@ -884,15 +858,11 @@ document.addEventListener('DOMContentLoaded', () => {
       isPlaying = false;
     });
 
-    // FIXED: Volume change listener
     audio.addEventListener('volumechange', () => {
       console.log('🔊 Volume changed to:', audio.volume, 'Muted:', audio.muted);
     });
   }
 
-  /**
-   * USER INTERACTION HANDLER - IMPROVED
-   */
   function setupUserInteractionHandler() {
     const interactionEvents = ['click', 'touchstart', 'keydown'];
     
@@ -900,33 +870,158 @@ document.addEventListener('DOMContentLoaded', () => {
       userHasInteracted = true;
       console.log('👆 User interaction detected:', e.type);
       
-      // CHANGED: Pastikan volume dan unmute (23% default)
       if (audio) {
         audio.muted = false;
         audio.volume = volumeRange ? Math.max(0.1, volumeRange.value / 100) : 0.23;
         console.log('🔊 Audio unmuted, volume set to:', audio.volume);
       }
       
-      // Show ready message
       if (currentTrackTitle && currentTrackTitle.textContent.includes('Click to')) {
         currentTrackTitle.textContent = tracks[currentIndex]?.title || 'Ready to Play';
         currentTrackTitle.style.color = '';
       }
       
-      // Remove listeners after first interaction
       interactionEvents.forEach(event => {
         document.removeEventListener(event, handleFirstInteraction);
       });
     }
     
-    // Add listeners for first interaction
     interactionEvents.forEach(event => {
       document.addEventListener(event, handleFirstInteraction, { once: true, passive: true });
     });
   }
 
   /**
-   * REMAINING FUNCTIONS (Footer, Back to Top, etc.) - UNCHANGED
+   * ENHANCED OUTFIT DETAIL PANEL WITH SMOOTH ANIMATIONS
+   */
+  window.showOutfitDetail = function(id, title, description, imageSrc) {
+    const panel = document.getElementById('outfitDetailPanel');
+    const titleEl = document.getElementById('detailTitle');
+    const outfitTitleEl = document.getElementById('detailOutfitTitle');
+    const descriptionEl = document.getElementById('detailDescription');
+    const imageEl = document.getElementById('detailImage');
+
+    // Remove selection from all cards with animation
+    document.querySelectorAll('.outfit-card').forEach(c => {
+      c.classList.remove('selected');
+      c.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+    
+    // Add selection to clicked card with animation
+    const selected = document.querySelector(`[data-outfit="${id}"]`);
+    if (selected) {
+      selected.classList.add('selected');
+      selected.style.transform = 'rotate(0deg) scale(1.02)';
+      selected.style.boxShadow = '0 0 0 4px rgba(233, 49, 26, 0.3), 0 20px 40px rgba(0,0,0,0.3)';
+      
+      // Pulse effect
+      setTimeout(() => {
+        selected.style.transform = 'rotate(0deg) scale(1.05)';
+      }, 100);
+      setTimeout(() => {
+        selected.style.transform = 'rotate(0deg) scale(1.02)';
+      }, 200);
+    }
+
+    // Update content with fade animation
+    if (titleEl) {
+      titleEl.style.opacity = '0';
+      setTimeout(() => {
+        titleEl.textContent = `Detail Outfit: ${title}`;
+        titleEl.style.opacity = '1';
+      }, 150);
+    }
+    
+    if (outfitTitleEl) {
+      outfitTitleEl.style.opacity = '0';
+      setTimeout(() => {
+        outfitTitleEl.textContent = title;
+        outfitTitleEl.style.opacity = '1';
+      }, 200);
+    }
+    
+    if (descriptionEl) {
+      descriptionEl.style.opacity = '0';
+      setTimeout(() => {
+        descriptionEl.textContent = description;
+        descriptionEl.style.opacity = '1';
+      }, 250);
+    }
+    
+    if (imageEl) {
+      imageEl.style.opacity = '0';
+      imageEl.style.transform = 'scale(0.9)';
+      imageEl.src = imageSrc;
+      imageEl.alt = `Detail ${title}`;
+      
+      imageEl.onload = () => {
+        imageEl.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        imageEl.style.opacity = '1';
+        imageEl.style.transform = 'scale(1)';
+      };
+    }
+    
+    // Show panel with smooth animation
+    if (panel) {
+      panel.style.display = 'block';
+      panel.style.opacity = '0';
+      panel.style.transform = 'translateY(40px) scale(0.9)';
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          panel.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          panel.style.opacity = '1';
+          panel.style.transform = 'translateY(0) scale(1)';
+        });
+      });
+      
+      // Smooth scroll to panel after animation starts
+      setTimeout(() => {
+        panel.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }, 150);
+    }
+  };
+
+  window.closeOutfitDetail = function() {
+    const panel = document.getElementById('outfitDetailPanel');
+    
+    // Remove selection from all cards with smooth animation
+    document.querySelectorAll('.outfit-card').forEach(c => {
+      c.classList.remove('selected');
+      c.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      c.style.transform = '';
+      c.style.boxShadow = '';
+    });
+    
+    // Hide panel with smooth slide-down animation
+    if (panel) {
+      panel.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      panel.style.opacity = '0';
+      panel.style.transform = 'translateY(40px) scale(0.95)';
+      
+      setTimeout(() => {
+        panel.style.display = 'none';
+        
+        // Reset transforms for next open
+        panel.style.transform = 'translateY(40px) scale(0.9)';
+      }, 500);
+    }
+  };
+
+  // Initialize outfit detail panel state
+  const outfitPanel = document.getElementById('outfitDetailPanel');
+  if (outfitPanel) {
+    outfitPanel.style.opacity = '0';
+    outfitPanel.style.transform = 'translateY(40px) scale(0.9)';
+    outfitPanel.style.display = 'none';
+  }
+
+  /**
+   * FOOTER AND OTHER COMPONENTS
    */
   function initializeFooter() {
     let footer = document.querySelector('.site-footer');
@@ -1015,7 +1110,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Enhanced polaroid interactions untuk 3 foto galeri
     const polaroidFrames = document.querySelectorAll('.polaroid-frame');
     polaroidFrames.forEach(frame => {
       const originalTransform = getComputedStyle(frame).transform;
@@ -1133,6 +1227,12 @@ document.addEventListener('DOMContentLoaded', () => {
           navMenu.classList.remove('open');
           navToggle.classList.remove('active');
         }
+        
+        // Close outfit detail panel on Escape
+        const panel = document.getElementById('outfitDetailPanel');
+        if (panel && panel.style.display !== 'none') {
+          window.closeOutfitDetail();
+        }
       }
     });
   }
@@ -1198,10 +1298,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTrack(0);
   setupUserInteractionHandler();
 
-  // CHANGED: Set proper initial volume (23% instead of 50%)
   if (audio && volumeRange) {
-    audio.volume = 0.23; // Changed from 0.5 to 0.23
-    volumeRange.value = 23; // Changed from 50 to 23
+    audio.volume = 0.23;
+    volumeRange.value = 23;
   }
 
   initializeFooter();
@@ -1282,6 +1381,25 @@ document.addEventListener('DOMContentLoaded', () => {
       left: -9999px;
       opacity: 0;
     }
+    
+    /* Outfit Detail Panel Enhanced Animations */
+    .outfit-detail-panel {
+      will-change: transform, opacity;
+    }
+    
+    .outfit-card {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .outfit-card.selected {
+      border-color: var(--highlight-6);
+      transform: rotate(0deg) scale(1.02);
+      box-shadow: 0 0 0 4px rgba(233, 49, 26, 0.3), 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    #detailImage {
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
   `;
   
   document.head.appendChild(dynamicStyles);
@@ -1308,7 +1426,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // CHANGED: Enhanced success message dengan 23% volume info
   console.log('🎵 Dies Natalis HIFI-67 Enhanced Website Loaded Successfully!');
   console.log('📋 Audio Player Status:', {
     audioElement: !!audio,
@@ -1316,16 +1433,14 @@ document.addEventListener('DOMContentLoaded', () => {
     isPowerOn: isPowerOn,
     userHasInteracted: userHasInteracted,
     audioFiles: tracks.map(t => t.src),
-    initialVolume: '23%' // Changed to show 23%
+    initialVolume: '23%'
   });
   
-  // FIXED: Show helpful initial message
   setTimeout(() => {
     if (currentTrackTitle && !userHasInteracted) {
       currentTrackTitle.style.color = '#333';
     }
     
-    // Test audio capability
     if (audio) {
       console.log('🔧 Audio Element Test:', {
         canPlayMP3: audio.canPlayType('audio/mpeg'),
