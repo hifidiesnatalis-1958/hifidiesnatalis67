@@ -1442,8 +1442,13 @@ section[id] {
   width: 140%;
   height: 140%;
   background: repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(104, 199, 193, 0.03) 15deg, transparent 30deg, rgba(250, 202, 120, 0.03) 45deg, transparent 60deg, rgba(245, 127, 91, 0.03) 75deg, transparent 90deg);
-  animation: rotateBackground 20s linear infinite;
   pointer-events: none;
+}
+
+@media (min-width: 769px) {
+  .history-section::before {
+    animation: rotateBackground 20s linear infinite;
+  }
 }
 
 .history-section::after {
@@ -1541,9 +1546,14 @@ section[id] {
   position: absolute;
   inset: 0;
   background: repeating-conic-gradient(from 45deg at 30% 30%, transparent 0deg, rgba(104, 199, 193, 0.02) 30deg, transparent 60deg, rgba(245, 127, 91, 0.02) 90deg, transparent 120deg), repeating-conic-gradient(from -45deg at 70% 70%, transparent 0deg, rgba(250, 202, 120, 0.02) 30deg, transparent 60deg, rgba(233, 49, 26, 0.02) 90deg, transparent 120deg);
-  animation: rotateBackground 25s linear infinite;
   pointer-events: none;
   z-index: -1;
+}
+
+@media (min-width: 769px) {
+  .outfit-gallery::before {
+    animation: rotateBackground 25s linear infinite;
+  }
 }
 
 .outfit-grid {
@@ -1602,26 +1612,28 @@ section[id] {
   left: -3px;
   right: -3px;
   bottom: -3px;
-  background: linear-gradient(45deg, 
-    var(--highlight-1) 0%, 
-    var(--highlight-2) 14%, 
-    var(--highlight-3) 28%, 
-    var(--highlight-4) 42%, 
-    var(--highlight-6) 56%,
-    var(--highlight-7) 70%,
-    var(--highlight-8) 84%,
-    var(--highlight-1) 100%
-  );
+  background: linear-gradient(45deg, var(--highlight-1) 0%, var(--highlight-2) 14%, var(--highlight-3) 28%, var(--highlight-4) 42%, var(--highlight-6) 56%, var(--highlight-7) 70%, var(--highlight-8) 84%, var(--highlight-1) 100%);
   border-radius: 23px;
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
-  animation: rainbowShift 8s ease-in-out infinite;
 }
 
-.outfit-card:hover::before {
-  opacity: 0.7;
-  animation: rainbowShift 2s ease-in-out infinite;
+@media (min-width: 769px) {
+  .outfit-card::before {
+    animation: rainbowShift 8s ease-in-out infinite;
+  }
+  
+  .outfit-card:hover::before {
+    opacity: 0.7;
+    animation: rainbowShift 2s ease-in-out infinite;
+  }
+}
+
+@media (max-width: 768px) {
+  .outfit-card:active::before {
+    opacity: 0.5;
+  }
 }
 
 .outfit-card.selected {
