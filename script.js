@@ -1,5 +1,6 @@
 // Complete Enhanced JavaScript for Dies Natalis HIFI-67 Retro Website
 // FIXED: Audio playback issues - guaranteed sound output
+// 100% RESPONSIVE - SYNCED WITH CSS
 
 document.addEventListener('DOMContentLoaded', () => {
   /**
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /**
-   * ENHANCED ENTRANCE ANIMATIONS
+   * ENHANCED ENTRANCE ANIMATIONS - RESPONSIVE
    */
   function initEntranceAnimations() {
     const elements = document.querySelectorAll('h1, h2, h3, p, .card, .button, .music-player, nav a');
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * ENHANCED HEADER - ALWAYS VISIBLE
+   * ENHANCED HEADER - ALWAYS VISIBLE & RESPONSIVE
    */
   const header = document.getElementById('header') || document.querySelector('.site-header');
   let lastScrollY = 0;
@@ -111,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll, { passive: true });
 
   /**
-   * ENHANCED HAMBURGER MENU
+   * ENHANCED HAMBURGER MENU - 100% RESPONSIVE
    */
   const navbar = document.querySelector('.navbar');
   let navMenu = document.getElementById('navMenu') || document.querySelector('.nav-links');
@@ -141,6 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!backdrop && window.innerWidth <= 768) {
       backdrop = document.createElement('div');
       backdrop.className = 'nav-backdrop';
+      backdrop.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+      `;
       document.body.appendChild(backdrop);
     }
     
@@ -148,8 +159,12 @@ document.addEventListener('DOMContentLoaded', () => {
       navMenu.classList.remove('open');
       navToggle.classList.remove('active');
       navToggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
       
-      if (backdrop) backdrop.classList.remove('active');
+      if (backdrop) {
+        backdrop.style.opacity = '0';
+        backdrop.style.pointerEvents = 'none';
+      }
       
       if (lines.length >= 3) {
         lines[0].style.transform = 'translate(-50%, -7px)';
@@ -165,7 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
       navToggle.classList.add('active');
       navToggle.setAttribute('aria-expanded', 'true');
       
-      if (backdrop) backdrop.classList.add('active');
+      // Prevent body scroll on mobile when menu open
+      if (window.innerWidth <= 768) {
+        document.body.style.overflow = 'hidden';
+      }
+      
+      if (backdrop) {
+        backdrop.style.opacity = '1';
+        backdrop.style.pointerEvents = 'auto';
+      }
       
       if (lines.length >= 3) {
         lines[0].style.transform = 'translate(-50%, 0) rotate(45deg)';
@@ -189,18 +212,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuLinks = navMenu.querySelectorAll('a');
     menuLinks.forEach((link, index) => {
       link.addEventListener('mouseenter', () => {
-        link.style.transform = 'translateX(8px) scale(1.02)';
-        link.style.textShadow = '0 0 15px rgba(255, 255, 255, 0.4)';
+        if (window.innerWidth > 768) {
+          link.style.transform = 'translateX(8px) scale(1.02)';
+          link.style.textShadow = '0 0 15px rgba(255, 255, 255, 0.4)';
+        }
       });
       
       link.addEventListener('mouseleave', () => {
-        link.style.transform = '';
-        link.style.textShadow = '';
+        if (window.innerWidth > 768) {
+          link.style.transform = '';
+          link.style.textShadow = '';
+        }
       });
       
       link.addEventListener('click', () => {
         closeMenu();
       });
+      
+      // Touch feedback for mobile
+      link.addEventListener('touchstart', (e) => {
+        link.style.transform = 'scale(0.95)';
+      }, { passive: true });
+      
+      link.addEventListener('touchend', () => {
+        setTimeout(() => {
+          link.style.transform = '';
+        }, 150);
+      }, { passive: true });
     });
 
     document.addEventListener('click', (e) => {
@@ -211,13 +249,39 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Escape') closeMenu();
     });
 
+    // Responsive menu handling
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 768) closeMenu();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (window.innerWidth > 768) {
+          closeMenu();
+          document.body.style.overflow = '';
+        }
+        
+        // Recreate backdrop if needed
+        if (window.innerWidth <= 768 && !backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.className = 'nav-backdrop';
+          backdrop.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+          `;
+          document.body.appendChild(backdrop);
+          backdrop.addEventListener('click', closeMenu);
+        }
+      }, 100);
     }, { passive: true });
   }
 
   /**
-   * ENHANCED SCROLL ANIMATIONS WITH PARALLAX
+   * ENHANCED SCROLL ANIMATIONS WITH PARALLAX - RESPONSIVE
    */
   const observerOptions = {
     threshold: [0, 0.1, 0.5],
@@ -233,7 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (entry.isIntersecting) {
         element.classList.add('visible');
         
-        if (element.classList.contains('parallax')) {
+        // Responsive parallax - disable on mobile for performance
+        if (element.classList.contains('parallax') && window.innerWidth > 768) {
           const speed = parseFloat(element.dataset.speed) || 0.3;
           const yPos = -(scrollPercent * 50 * speed);
           element.style.transform = `translateY(${yPos}px)`;
@@ -249,23 +314,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const animatedElements = document.querySelectorAll('.anim-target, .card, .section, .music-player');
   animatedElements.forEach((el, index) => {
-    el.classList.add('parallax');
-    el.dataset.speed = (0.2 + (index % 3) * 0.1).toString();
+    // Only add parallax on larger screens
+    if (window.innerWidth > 768) {
+      el.classList.add('parallax');
+      el.dataset.speed = (0.2 + (index % 3) * 0.1).toString();
+    }
     scrollObserver.observe(el);
     
-    el.addEventListener('mouseenter', () => {
-      el.style.transform += ' scale(1.01)';
-      el.style.filter = 'brightness(1.05)';
-    });
+    // Touch-friendly hover effects
+    const isTouch = 'ontouchstart' in window;
     
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = el.style.transform.replace(' scale(1.01)', '');
-      el.style.filter = '';
-    });
+    if (!isTouch) {
+      el.addEventListener('mouseenter', () => {
+        el.style.transform += ' scale(1.01)';
+        el.style.filter = 'brightness(1.05)';
+      });
+      
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = el.style.transform.replace(' scale(1.01)', '');
+        el.style.filter = '';
+      });
+    } else {
+      // Touch feedback
+      el.addEventListener('touchstart', (e) => {
+        el.style.transform += ' scale(0.98)';
+      }, { passive: true });
+      
+      el.addEventListener('touchend', () => {
+        setTimeout(() => {
+          el.style.transform = el.style.transform.replace(' scale(0.98)', '');
+        }, 150);
+      }, { passive: true });
+    }
   });
 
   /**
-   * ENHANCED MUSIC PLAYER - FIXED AUDIO OUTPUT
+   * ENHANCED MUSIC PLAYER - FIXED AUDIO OUTPUT & RESPONSIVE
    */
   let audio = document.getElementById('audioPlayer');
   
@@ -273,8 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
     audio = document.createElement('audio');
     audio.id = 'audioPlayer';
     audio.preload = 'metadata';
-    // FIXED: Hapus crossOrigin untuk local files
-    // audio.crossOrigin = 'anonymous'; // REMOVED
     document.body.appendChild(audio);
   }
   
@@ -293,7 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const playlistEl = document.getElementById('playlist');
   const wave = document.getElementById('waveAnimation');
 
-  // FIXED: Audio files dengan fallback yang benar
   const tracks = [
     { 
       title: 'Lagu Tema HIFI-67', 
@@ -310,10 +391,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { 
       title: 'Nostalgic Beats', 
       src: 'Music/nostalgic.mp3'
-    },
-    {
-      title: 'Demo Track (Silent)',
-      src: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAAAQBcAAEAfAAABAAgAZGF0YQAAAAA='
     }
   ];
   
@@ -328,22 +405,24 @@ document.addEventListener('DOMContentLoaded', () => {
   let source = null;
   let userHasInteracted = false;
 
-  // Create wave visualization
+  // Create responsive wave visualization
   function createWaveVisualization() {
     if (!wave) return;
     
     wave.innerHTML = '';
-    const numBars = 24;
+    // Responsive number of bars
+    const numBars = window.innerWidth > 768 ? 24 : window.innerWidth > 480 ? 16 : 12;
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
     
     for (let i = 0; i < numBars; i++) {
       const bar = document.createElement('div');
       bar.className = 'wave-bar';
+      const barWidth = window.innerWidth > 768 ? 6 : window.innerWidth > 480 ? 5 : 4;
       bar.style.cssText = `
         background: ${colors[i % colors.length]};
         height: 8px;
-        width: 6px;
-        margin: 0 2px;
+        width: ${barWidth}px;
+        margin: 0 ${window.innerWidth > 480 ? 2 : 1}px;
         border-radius: 3px;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         display: inline-block;
@@ -355,9 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // FIXED: Simplified audio setup tanpa Web Audio Context yang bisa bermasalah
   function setupAudioVisualization() {
-    // Skip Web Audio Context setup untuk menghindari masalah routing
     console.log('Audio visualization setup skipped - using fallback animation');
   }
 
@@ -372,11 +449,13 @@ document.addEventListener('DOMContentLoaded', () => {
       bars.forEach((bar, index) => {
         const value = Math.random() * 50 + 20;
         const height = Math.max(8, value);
+        const maxHeight = window.innerWidth > 768 ? 60 : window.innerWidth > 480 ? 45 : 35;
+        const clampedHeight = Math.min(height, maxHeight);
         const hue = (value / 70) * 300 + (index * 15);
         
-        bar.style.height = `${height}px`;
+        bar.style.height = `${clampedHeight}px`;
         bar.style.background = `hsl(${hue}, 70%, 60%)`;
-        bar.style.boxShadow = `0 0 ${height/4}px hsl(${hue}, 70%, 60%)`;
+        bar.style.boxShadow = `0 0 ${clampedHeight/4}px hsl(${hue}, 70%, 60%)`;
         bar.style.transform = `scaleY(${0.8 + (value / 70) * 0.4})`;
       });
       
@@ -408,12 +487,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const li = document.createElement('li');
       li.textContent = track.title;
       li.dataset.index = index;
+      const fontSize = window.innerWidth > 768 ? '0.9rem' : window.innerWidth > 480 ? '0.85rem' : '0.8rem';
       li.style.cssText = `
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
-        padding: 8px 12px;
+        padding: ${window.innerWidth > 480 ? '8px 12px' : '6px 10px'};
         border-radius: 6px;
         margin: 4px 0;
+        font-size: ${fontSize};
       `;
       
       li.addEventListener('click', () => {
@@ -425,15 +506,29 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => li.style.transform = '', 150);
       });
       
-      li.addEventListener('mouseenter', () => {
-        li.style.transform = 'translateX(8px)';
-        li.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-      });
-      
-      li.addEventListener('mouseleave', () => {
-        li.style.transform = '';
-        li.style.backgroundColor = '';
-      });
+      // Touch-friendly interactions
+      const isTouch = 'ontouchstart' in window;
+      if (!isTouch) {
+        li.addEventListener('mouseenter', () => {
+          li.style.transform = 'translateX(8px)';
+          li.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        });
+        
+        li.addEventListener('mouseleave', () => {
+          li.style.transform = '';
+          li.style.backgroundColor = '';
+        });
+      } else {
+        li.addEventListener('touchstart', () => {
+          li.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+        }, { passive: true });
+        
+        li.addEventListener('touchend', () => {
+          setTimeout(() => {
+            li.style.backgroundColor = '';
+          }, 200);
+        }, { passive: true });
+      }
       
       playlistEl.appendChild(li);
     });
@@ -444,20 +539,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const track = tracks[currentIndex];
     if (!track || !audio) return;
     
-    // FIXED: Reset audio dengan proper cleanup
     audio.pause();
     audio.currentTime = 0;
-    
-    // CHANGED: Set volume BEFORE loading (23% default)
     audio.volume = volumeRange ? (volumeRange.value / 100) : 0.23;
-    
     audio.src = track.src;
     
-    // FIXED: Better error handling
     audio.addEventListener('error', function handleError(e) {
       console.log(`Error loading ${track.title}:`, audio.error);
       
-      // Try next track if available
       if (currentIndex < tracks.length - 1) {
         console.log('Trying next track...');
         setTimeout(() => {
@@ -468,16 +557,8 @@ document.addEventListener('DOMContentLoaded', () => {
       audio.removeEventListener('error', handleError);
     }, { once: true });
     
-    // FIXED: Load with proper event handling
     audio.addEventListener('loadeddata', function handleLoaded() {
       console.log('Audio loaded successfully:', track.title);
-      console.log('Audio properties:', {
-        duration: audio.duration,
-        volume: audio.volume,
-        muted: audio.muted,
-        readyState: audio.readyState
-      });
-      
       audio.removeEventListener('loadeddata', handleLoaded);
     }, { once: true });
     
@@ -515,7 +596,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTonearm(0);
   }
 
-  // FIXED: Simplified playAudio function
   function playAudio() {
     if (!audio || !isPowerOn) {
       console.log('Cannot play: audio element missing or power off');
@@ -523,8 +603,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     userHasInteracted = true;
-    
-    // CHANGED: Ensure audio is not muted dan volume proper (23% default)
     audio.muted = false;
     audio.volume = volumeRange ? Math.max(0.1, volumeRange.value / 100) : 0.23;
     
@@ -543,7 +621,6 @@ document.addEventListener('DOMContentLoaded', () => {
         isPlaying = true;
         console.log('✅ Audio playing successfully!');
         
-        // Update play button
         if (playPauseBtn) {
           const icon = playPauseBtn.querySelector('i');
           if (icon) {
@@ -554,13 +631,11 @@ document.addEventListener('DOMContentLoaded', () => {
           playPauseBtn.style.boxShadow = '0 0 15px rgba(76, 205, 196, 0.4)';
         }
         
-        // Start vinyl spinning
         if (vinyl) {
           vinyl.classList.add('spinning');
           vinyl.style.filter = 'drop-shadow(0 0 20px rgba(76, 205, 196, 0.4))';
         }
         
-        // Move tonearm to playing position
         if (tonearm) {
           tonearm.classList.add('playing');
           tonearm.style.transition = 'transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -570,13 +645,12 @@ document.addEventListener('DOMContentLoaded', () => {
         animateWave();
         
       }).catch(error => {
-        console.log('❌ Playbook failed:', error);
+        console.log('❌ Playback failed:', error);
         isPlaying = false;
         
-        // Show user-friendly message
         if (currentTrackTitle) {
           const originalText = currentTrackTitle.textContent;
-          currentTrackTitle.textContent = 'Audio playbook failed - check volume';
+          currentTrackTitle.textContent = 'Audio playback failed - check volume';
           currentTrackTitle.style.color = '#ff6b6b';
           
           setTimeout(() => {
@@ -615,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (tonearm) {
       tonearm.classList.remove('playing');
-      tonearm.style.transform = 'rotate(15deg)'; // Rest position
+      tonearm.style.transform = 'rotate(15deg)';
     }
     
     stopWaveAnimation();
@@ -663,10 +737,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!tonearm) return;
     
     if (!isPlaying) {
-      tonearm.style.transform = 'rotate(15deg)'; // Rest position
+      tonearm.style.transform = 'rotate(15deg)';
     } else {
-      const startAngle = -5; // Start position when playing
-      const endAngle = 5;    // End position when track ends
+      const startAngle = -5;
+      const endAngle = 5;
       const currentAngle = startAngle + (progress * (endAngle - startAngle));
       tonearm.style.transform = `rotate(${currentAngle}deg)`;
     }
@@ -701,9 +775,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${min}:${sec.toString().padStart(2, '0')}`;
   }
 
-  // Enhanced button interactions
+  // Enhanced button interactions - RESPONSIVE
   function addButtonAnimation(button, callback) {
     if (!button) return;
+    
+    const isTouch = 'ontouchstart' in window;
     
     button.addEventListener('click', (e) => {
       e.preventDefault();
@@ -736,7 +812,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       setTimeout(() => ripple.remove(), 600);
       
-      // Scale animation
       button.style.transform = 'scale(0.95)';
       setTimeout(() => {
         button.style.transform = '';
@@ -744,18 +819,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 100);
     });
     
-    button.addEventListener('mouseenter', () => {
-      button.style.transform = 'scale(1.05)';
-      button.style.filter = 'brightness(1.2)';
-    });
-    
-    button.addEventListener('mouseleave', () => {
-      button.style.transform = '';
-      button.style.filter = '';
-    });
+    if (!isTouch) {
+      button.addEventListener('mouseenter', () => {
+        button.style.transform = 'scale(1.05)';
+        button.style.filter = 'brightness(1.2)';
+      });
+      
+      button.addEventListener('mouseleave', () => {
+        button.style.transform = '';
+        button.style.filter = '';
+      });
+    } else {
+      button.addEventListener('touchstart', () => {
+        button.style.transform = 'scale(0.95)';
+      }, { passive: true });
+      
+      button.addEventListener('touchend', () => {
+        setTimeout(() => {
+          button.style.transform = '';
+        }, 150);
+      }, { passive: true });
+    }
   }
 
-  // Apply button animations
   addButtonAnimation(playPauseBtn, () => {
     if (!isPowerOn) return;
     if (isPlaying) {
@@ -799,38 +885,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // CHANGED: Enhanced volume control dengan 23% default
+  // Enhanced volume control - RESPONSIVE
   if (volumeRange) {
-    // Set initial volume yang 23% (changed from 50 to 23)
     volumeRange.value = 23;
     if (audio) audio.volume = 0.23;
     
-    volumeRange.addEventListener('input', (e) => {
+    const handleVolumeInput = (e) => {
       userHasInteracted = true;
-      const volume = Math.max(0.01, e.target.value / 100); // Minimum 1%
+      const volume = Math.max(0.01, e.target.value / 100);
       if (audio) {
         audio.volume = volume;
-        audio.muted = false; // Pastikan tidak muted
+        audio.muted = false;
         console.log('Volume set to:', volume);
       }
       
       const percent = e.target.value;
       volumeRange.style.background = `linear-gradient(to right, #4ecdc4 ${percent}%, rgba(255,255,255,0.1) ${percent}%)`;
-    });
+    };
     
-    // CHANGED: Set initial slider appearance (changed from 50 to 23)
+    volumeRange.addEventListener('input', handleVolumeInput);
+    volumeRange.addEventListener('change', handleVolumeInput); // For touch devices
+    
     volumeRange.style.background = `linear-gradient(to right, #4ecdc4 23%, rgba(255,255,255,0.1) 23%)`;
     
-    volumeRange.addEventListener('mousedown', () => {
-      volumeRange.style.transform = 'scale(1.1)';
-    });
-    
-    volumeRange.addEventListener('mouseup', () => {
-      volumeRange.style.transform = '';
-    });
+    const isTouch = 'ontouchstart' in window;
+    if (!isTouch) {
+      volumeRange.addEventListener('mousedown', () => {
+        volumeRange.style.transform = 'scale(1.1)';
+      });
+      
+      volumeRange.addEventListener('mouseup', () => {
+        volumeRange.style.transform = '';
+      });
+    } else {
+      volumeRange.addEventListener('touchstart', () => {
+        volumeRange.style.transform = 'scale(1.05)';
+      }, { passive: true });
+      
+      volumeRange.addEventListener('touchend', () => {
+        setTimeout(() => {
+          volumeRange.style.transform = '';
+        }, 150);
+      }, { passive: true });
+    }
   }
 
-  // Power toggle
+  // Power toggle - RESPONSIVE
   if (powerToggle) {
     powerToggle.checked = true;
     
@@ -849,24 +949,32 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseAudio();
         if (tonearm) {
           tonearm.classList.add('parked');
-          tonearm.style.transform = 'rotate(-45deg)'; // Parked position
+          tonearm.style.transform = 'rotate(-45deg)';
         }
       }
     });
+    
+    // Touch-friendly toggle animation
+    const isTouch = 'ontouchstart' in window;
+    if (isTouch) {
+      powerToggle.addEventListener('touchstart', () => {
+        powerToggle.style.transform = 'scale(0.95)';
+      }, { passive: true });
+      
+      powerToggle.addEventListener('touchend', () => {
+        setTimeout(() => {
+          powerToggle.style.transform = '';
+        }, 150);
+      }, { passive: true });
+    }
   }
 
-  // FIXED: Audio event listeners dengan better logging
   if (audio) {
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateTime);
     
     audio.addEventListener('canplaythrough', (e) => {
       console.log('✅ Audio ready to play:', tracks[currentIndex]?.title);
-      console.log('Audio state:', {
-        volume: audio.volume,
-        muted: audio.muted,
-        duration: audio.duration
-      });
     });
     
     audio.addEventListener('loadstart', () => {
@@ -877,7 +985,6 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('📁 Audio data loaded:', tracks[currentIndex]?.title);
     });
 
-    // FIXED: Enhanced play/pause handling
     audio.addEventListener('play', () => {
       console.log('▶️ Audio started playing');
       isPlaying = true;
@@ -888,14 +995,13 @@ document.addEventListener('DOMContentLoaded', () => {
       isPlaying = false;
     });
 
-    // FIXED: Volume change listener
     audio.addEventListener('volumechange', () => {
       console.log('🔊 Volume changed to:', audio.volume, 'Muted:', audio.muted);
     });
   }
 
   /**
-   * USER INTERACTION HANDLER - IMPROVED
+   * USER INTERACTION HANDLER - RESPONSIVE
    */
   function setupUserInteractionHandler() {
     const interactionEvents = ['click', 'touchstart', 'keydown'];
@@ -904,33 +1010,29 @@ document.addEventListener('DOMContentLoaded', () => {
       userHasInteracted = true;
       console.log('👆 User interaction detected:', e.type);
       
-      // CHANGED: Pastikan volume dan unmute (23% default)
       if (audio) {
         audio.muted = false;
         audio.volume = volumeRange ? Math.max(0.1, volumeRange.value / 100) : 0.23;
         console.log('🔊 Audio unmuted, volume set to:', audio.volume);
       }
       
-      // Show ready message
       if (currentTrackTitle && currentTrackTitle.textContent.includes('Click to')) {
         currentTrackTitle.textContent = tracks[currentIndex]?.title || 'Ready to Play';
         currentTrackTitle.style.color = '';
       }
       
-      // Remove listeners after first interaction
       interactionEvents.forEach(event => {
         document.removeEventListener(event, handleFirstInteraction);
       });
     }
     
-    // Add listeners for first interaction
     interactionEvents.forEach(event => {
       document.addEventListener(event, handleFirstInteraction, { once: true, passive: true });
     });
   }
 
   /**
-   * REMAINING FUNCTIONS (Footer, Back to Top, etc.) - UNCHANGED
+   * FOOTER INITIALIZATION - RESPONSIVE
    */
   function initializeFooter() {
     let footer = document.querySelector('.site-footer');
@@ -940,15 +1042,29 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(footer);
     }
 
+    const isTouch = 'ontouchstart' in window;
     const socialLinks = footer.querySelectorAll('.social-link');
+    
     socialLinks.forEach(link => {
-      link.addEventListener('mouseenter', (e) => {
-        e.target.style.transform = 'translateY(-4px) scale(1.1)';
-      });
-      
-      link.addEventListener('mouseleave', (e) => {
-        e.target.style.transform = '';
-      });
+      if (!isTouch) {
+        link.addEventListener('mouseenter', (e) => {
+          e.target.style.transform = 'translateY(-4px) scale(1.1)';
+        });
+        
+        link.addEventListener('mouseleave', (e) => {
+          e.target.style.transform = '';
+        });
+      } else {
+        link.addEventListener('touchstart', (e) => {
+          e.target.style.transform = 'scale(0.95)';
+        }, { passive: true });
+        
+        link.addEventListener('touchend', (e) => {
+          setTimeout(() => {
+            e.target.style.transform = '';
+          }, 150);
+        }, { passive: true });
+      }
       
       link.addEventListener('click', (e) => {
         e.target.style.transform = 'scale(0.9)';
@@ -976,6 +1092,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /**
+   * BACK TO TOP BUTTON - RESPONSIVE
+   */
   function createBackToTopButton() {
     let backToTop = document.querySelector('.back-to-top');
     if (!backToTop) {
@@ -987,7 +1106,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const toggleBackToTop = () => {
-      if (window.pageYOffset > 300) {
+      const showThreshold = window.innerHeight * 0.5; // 50% of viewport
+      if (window.pageYOffset > showThreshold) {
         backToTop.classList.add('visible');
       } else {
         backToTop.classList.remove('visible');
@@ -1001,64 +1121,154 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    const isTouch = 'ontouchstart' in window;
+    if (isTouch) {
+      backToTop.addEventListener('touchstart', () => {
+        backToTop.style.transform = 'scale(0.9)';
+      }, { passive: true });
+      
+      backToTop.addEventListener('touchend', () => {
+        setTimeout(() => {
+          backToTop.style.transform = '';
+        }, 150);
+      }, { passive: true });
+    }
+
     window.addEventListener('scroll', toggleBackToTop, { passive: true });
     toggleBackToTop();
   }
 
+  /**
+   * INTERACTIVE ELEMENTS - RESPONSIVE
+   */
   function initializeInteractiveElements() {
+    const isTouch = 'ontouchstart' in window;
+    
+    // Dashboard items
     const dashboardItems = document.querySelectorAll('.dashboard-item');
     dashboardItems.forEach(item => {
-      item.addEventListener('mouseenter', () => {
-        item.style.transform = 'translateY(-8px) scale(1.02)';
-        item.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
-      });
-      
-      item.addEventListener('mouseleave', () => {
-        item.style.transform = '';
-        item.style.boxShadow = '';
-      });
+      if (!isTouch) {
+        item.addEventListener('mouseenter', () => {
+          item.style.transform = 'translateY(-8px) scale(1.02)';
+          item.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
+        });
+        
+        item.addEventListener('mouseleave', () => {
+          item.style.transform = '';
+          item.style.boxShadow = '';
+        });
+      } else {
+        item.addEventListener('touchstart', () => {
+          item.style.transform = 'scale(0.98)';
+        }, { passive: true });
+        
+        item.addEventListener('touchend', () => {
+          setTimeout(() => {
+            item.style.transform = '';
+          }, 150);
+        }, { passive: true });
+      }
     });
 
-    // Enhanced polaroid interactions untuk 3 foto galeri
+    // Enhanced polaroid interactions
     const polaroidFrames = document.querySelectorAll('.polaroid-frame');
     polaroidFrames.forEach(frame => {
-      const originalTransform = getComputedStyle(frame).transform;
-      
-      frame.addEventListener('mouseenter', () => {
-        if (frame.classList.contains('polaroid-main')) {
-          frame.style.transform = 'rotate(0deg) scale(1.05)';
-        } else if (frame.classList.contains('polaroid-left')) {
-          frame.style.transform = 'rotate(-5deg) scale(0.9)';
-        } else if (frame.classList.contains('polaroid-right')) {
-          frame.style.transform = 'rotate(8deg) scale(0.9)';
-        }
-        frame.style.zIndex = '10';
-      });
-      
-      frame.addEventListener('mouseleave', () => {
-        if (frame.classList.contains('polaroid-main')) {
-          frame.style.transform = 'rotate(-2deg)';
-        } else if (frame.classList.contains('polaroid-left')) {
-          frame.style.transform = 'rotate(-12deg) scale(0.85)';
-        } else if (frame.classList.contains('polaroid-right')) {
-          frame.style.transform = 'rotate(15deg) scale(0.85)';
-        }
-        frame.style.zIndex = '';
-      });
+      if (!isTouch) {
+        frame.addEventListener('mouseenter', () => {
+          if (frame.classList.contains('polaroid-main')) {
+            frame.style.transform = 'rotate(0deg) scale(1.05)';
+          } else if (frame.classList.contains('polaroid-left')) {
+            frame.style.transform = 'rotate(-5deg) scale(0.9)';
+          } else if (frame.classList.contains('polaroid-right')) {
+            frame.style.transform = 'rotate(8deg) scale(0.9)';
+          }
+          frame.style.zIndex = '10';
+        });
+        
+        frame.addEventListener('mouseleave', () => {
+          if (frame.classList.contains('polaroid-main')) {
+            frame.style.transform = 'rotate(-2deg)';
+          } else if (frame.classList.contains('polaroid-left')) {
+            frame.style.transform = 'rotate(-12deg) scale(0.85)';
+          } else if (frame.classList.contains('polaroid-right')) {
+            frame.style.transform = 'rotate(15deg) scale(0.85)';
+          }
+          frame.style.zIndex = '';
+        });
+      } else {
+        frame.addEventListener('touchstart', () => {
+          frame.style.transform = 'scale(0.98) rotate(0deg)';
+          frame.style.zIndex = '10';
+        }, { passive: true });
+        
+        frame.addEventListener('touchend', () => {
+          setTimeout(() => {
+            if (frame.classList.contains('polaroid-main')) {
+              frame.style.transform = 'rotate(-2deg)';
+            } else if (frame.classList.contains('polaroid-left')) {
+              frame.style.transform = 'rotate(-12deg) scale(0.85)';
+            } else if (frame.classList.contains('polaroid-right')) {
+              frame.style.transform = 'rotate(15deg) scale(0.85)';
+            }
+            frame.style.zIndex = '';
+          }, 200);
+        }, { passive: true });
+      }
     });
 
+    // Calendar cells
     const calendarCells = document.querySelectorAll('.calendar-cell:not(.empty)');
     calendarCells.forEach(cell => {
-      cell.addEventListener('mouseenter', () => {
-        cell.style.transform = 'translateY(-4px) scale(1.05)';
-      });
-      
-      cell.addEventListener('mouseleave', () => {
-        cell.style.transform = '';
-      });
+      if (!isTouch) {
+        cell.addEventListener('mouseenter', () => {
+          cell.style.transform = 'translateY(-4px) scale(1.05)';
+        });
+        
+        cell.addEventListener('mouseleave', () => {
+          cell.style.transform = '';
+        });
+      } else {
+        cell.addEventListener('touchstart', () => {
+          cell.style.transform = 'scale(0.95)';
+        }, { passive: true });
+        
+        cell.addEventListener('touchend', () => {
+          setTimeout(() => {
+            cell.style.transform = '';
+          }, 100);
+        }, { passive: true });
+      }
+    });
+    
+    // Outfit cards - RESPONSIVE
+    const outfitCards = document.querySelectorAll('.outfit-card');
+    outfitCards.forEach(card => {
+      if (!isTouch) {
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-10px) rotate(0deg) scale(1.05)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          const rotation = card.classList.contains('outfit-card:nth-child(odd)') ? 'rotate(-1deg)' : 'rotate(1deg)';
+          card.style.transform = rotation;
+        });
+      } else {
+        card.addEventListener('touchstart', () => {
+          card.style.transform = 'scale(0.98)';
+        }, { passive: true });
+        
+        card.addEventListener('touchend', () => {
+          setTimeout(() => {
+            card.style.transform = '';
+          }, 150);
+        }, { passive: true });
+      }
     });
   }
 
+  /**
+   * SMOOTH SCROLL - RESPONSIVE
+   */
   function initializeSmoothScroll() {
     const navLinks = document.querySelectorAll('a[href^="#"]');
     const sections = document.querySelectorAll('section[id]');
@@ -1070,9 +1280,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (target) {
           e.preventDefault();
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
+          
+          // Responsive scroll offset
+          const offset = window.innerWidth <= 768 ? 80 : 100;
+          const targetPosition = target.offsetTop - offset;
+          
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
           });
           
           updateActiveNavLink(href);
@@ -1082,6 +1297,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (navMenu && navToggle) {
             navMenu.classList.remove('open');
             navToggle.classList.remove('active');
+            document.body.style.overflow = '';
           }
         }
       });
@@ -1100,9 +1316,10 @@ document.addEventListener('DOMContentLoaded', () => {
       
       let currentSection = '';
       const scrollY = window.pageYOffset;
+      const offset = window.innerWidth <= 768 ? 100 : 120;
       
       sections.forEach(section => {
-        const sectionTop = section.offsetTop - 120;
+        const sectionTop = section.offsetTop - offset;
         const sectionHeight = section.offsetHeight;
         
         if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
@@ -1123,6 +1340,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateActiveNavLink();
   }
 
+  /**
+   * KEYBOARD ACCESSIBILITY
+   */
   function initializeKeyboardAccessibility() {
     document.addEventListener('keydown', (e) => {
       if ((e.key === ' ' || e.key === 'Enter') && e.target.classList.contains('dashboard-item')) {
@@ -1136,11 +1356,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navMenu && navMenu.classList.contains('open')) {
           navMenu.classList.remove('open');
           navToggle.classList.remove('active');
+          document.body.style.overflow = '';
+          
+          const backdrop = document.querySelector('.nav-backdrop');
+          if (backdrop) {
+            backdrop.style.opacity = '0';
+            backdrop.style.pointerEvents = 'none';
+          }
         }
+      }
+      
+      // Music player keyboard controls
+      if (e.key === ' ' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        if (playPauseBtn) playPauseBtn.click();
+      }
+      
+      if (e.key === 'ArrowRight' && e.target.tagName !== 'INPUT') {
+        e.preventDefault();
+        if (nextBtn) nextBtn.click();
+      }
+      
+      if (e.key === 'ArrowLeft' && e.target.tagName !== 'INPUT') {
+        e.preventDefault();
+        if (prevBtn) prevBtn.click();
       }
     });
   }
 
+  /**
+   * COUNTDOWN TIMER - RESPONSIVE
+   */
   function initializeCountdown() {
     const targetDate = new Date('2025-10-18T14:00:00+07:00');
     
@@ -1195,6 +1441,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
+   * RESPONSIVE UTILITIES
+   */
+  function handleResize() {
+    // Recreate wave visualization with appropriate number of bars
+    createWaveVisualization();
+    
+    // Update playlist styles
+    const playlistItems = playlistEl?.querySelectorAll('li');
+    const fontSize = window.innerWidth > 768 ? '0.9rem' : window.innerWidth > 480 ? '0.85rem' : '0.8rem';
+    const padding = window.innerWidth > 480 ? '8px 12px' : '6px 10px';
+    
+    playlistItems?.forEach(li => {
+      li.style.fontSize = fontSize;
+      li.style.padding = padding;
+    });
+  }
+
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(handleResize, 150);
+  }, { passive: true });
+
+  /**
    * INITIALIZE ALL COMPONENTS
    */
   createWaveVisualization();
@@ -1202,10 +1472,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTrack(0);
   setupUserInteractionHandler();
 
-  // CHANGED: Set proper initial volume (23% instead of 50%)
   if (audio && volumeRange) {
-    audio.volume = 0.23; // Changed from 0.5 to 0.23
-    volumeRange.value = 23; // Changed from 50 to 23
+    audio.volume = 0.23;
+    volumeRange.value = 23;
   }
 
   initializeFooter();
@@ -1216,7 +1485,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeCountdown();
 
   /**
-   * DYNAMIC STYLES
+   * DYNAMIC STYLES - 100% RESPONSIVE
    */
   const dynamicStyles = document.createElement('style');
   dynamicStyles.textContent = `
@@ -1231,8 +1500,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     @keyframes waveIdle {
       0% { height: 8px; opacity: 0.6; transform: scaleY(0.3); }
-      50% { height: 40px; opacity: 1; transform: scaleY(1); }
-      100% { height: 20px; opacity: 0.8; transform: scaleY(0.5); }
+      50% { height: clamp(30px, 6vh, 40px); opacity: 1; transform: scaleY(1); }
+      100% { height: clamp(15px, 3vh, 20px); opacity: 0.8; transform: scaleY(0.5); }
     }
     
     .ripple {
@@ -1286,6 +1555,44 @@ document.addEventListener('DOMContentLoaded', () => {
       left: -9999px;
       opacity: 0;
     }
+    
+    /* Nav backdrop styles */
+    .nav-backdrop.active {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    
+    /* Responsive touch feedback */
+    @media (hover: none) and (pointer: coarse) {
+      .outfit-card:active,
+      .polaroid-frame:active,
+      .dashboard-item:active {
+        transform: scale(0.98) !important;
+      }
+      
+      button:active,
+      .control-buttons button:active {
+        transform: scale(0.95) !important;
+      }
+    }
+    
+    /* Prevent text selection on interactive elements */
+    .nav-toggle,
+    .control-buttons button,
+    .social-link,
+    .calendar-cell,
+    .outfit-card {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Smooth scrolling for all browsers */
+    * {
+      -webkit-overflow-scrolling: touch;
+    }
   `;
   
   document.head.appendChild(dynamicStyles);
@@ -1303,6 +1610,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   window.addEventListener('scroll', debouncedScroll, { passive: true });
 
+  // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     if (animationFrame) {
       cancelAnimationFrame(animationFrame);
@@ -1312,30 +1620,62 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // CHANGED: Enhanced success message dengan 23% volume info
+  /**
+   * ORIENTATION CHANGE HANDLER - MOBILE
+   */
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      handleResize();
+      
+      // Close menu on orientation change
+      const navMenu = document.querySelector('.nav-links');
+      const navToggle = document.querySelector('.nav-toggle');
+      if (navMenu && navMenu.classList.contains('open')) {
+        navMenu.classList.remove('open');
+        navToggle.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }, 100);
+  });
+
+  /**
+   * VIEWPORT HEIGHT FIX - MOBILE BROWSERS
+   */
+  function setViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  
+  setViewportHeight();
+  window.addEventListener('resize', setViewportHeight, { passive: true });
+
+  /**
+   * SUCCESS LOG
+   */
   console.log('🎵 Dies Natalis HIFI-67 Enhanced Website Loaded Successfully!');
+  console.log('📱 Responsive Mode:', window.innerWidth <= 768 ? 'MOBILE' : 'DESKTOP');
   console.log('📋 Audio Player Status:', {
     audioElement: !!audio,
     tracks: tracks.length,
     isPowerOn: isPowerOn,
     userHasInteracted: userHasInteracted,
     audioFiles: tracks.map(t => t.src),
-    initialVolume: '23%' // Changed to show 23%
+    initialVolume: '23%',
+    touchDevice: 'ontouchstart' in window
   });
   
-  // FIXED: Show helpful initial message
   setTimeout(() => {
     if (currentTrackTitle && !userHasInteracted) {
       currentTrackTitle.style.color = '#333';
     }
     
-    // Test audio capability
     if (audio) {
       console.log('🔧 Audio Element Test:', {
         canPlayMP3: audio.canPlayType('audio/mpeg'),
         canPlayWAV: audio.canPlayType('audio/wav'),
         volume: audio.volume,
-        muted: audio.muted
+        muted: audio.muted,
+        devicePixelRatio: window.devicePixelRatio
       });
     }
   }, 3000);
