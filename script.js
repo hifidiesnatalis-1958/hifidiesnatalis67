@@ -1183,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function initializeCountdown() {
-    const targetDate = new Date('2025-10-18T14:00:00+07:00');
+    const targetDate = new Date('2025-10-18T10:00:00+07:00');
     
     const daysCard = document.getElementById('days');
     const hoursCard = document.getElementById('hours');
